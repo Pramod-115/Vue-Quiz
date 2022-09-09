@@ -24,11 +24,11 @@ const onAnswerSubmit = (event, item) => {
     event.target.classList.add('selectedAns')
     if (item === store.currentAnswer) {
         resultDom.value.innerText = "Right Answer"
-        resultDom.value.style.cssText = 'color:green;visibility:visible;';
+        resultDom.value.style.cssText = 'color:green;visibility:visible;'
     }
     else {
         resultDom.value.innerText = "Wrong Answer"
-        resultDom.value.style.cssText = 'color:red;visibility:visible;';
+        resultDom.value.style.cssText = 'color:red;visibility:visible;'
     }
     const aarDom = document.querySelectorAll('.option')
     let rightAnswerDom = null

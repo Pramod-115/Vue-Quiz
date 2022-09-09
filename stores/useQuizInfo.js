@@ -16,25 +16,25 @@ export const useQuizStore = defineStore("counter", {
 
   actions: {
     UpdateCurrentOptions: function () {
-      const rightOption = this.allData[this.currentQuestionNo].correct_answer;
-      const allcurrentOptions = this.allData[this.currentQuestionNo].incorrect_answers;
+      const rightOption = this.allData[this.currentQuestionNo].correct_answer
+      const allcurrentOptions = this.allData[this.currentQuestionNo].incorrect_answers
       if (allcurrentOptions.length < 4) {
-        allcurrentOptions.push(rightOption);
+        allcurrentOptions.push(rightOption)
       }
       this.currentAnswer = rightOption
       let shuffled = allcurrentOptions.map((value) => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value);
+        .map(({ value }) => value)
       this.currentOptions = shuffled
     },
     onQuizStart: function (alldata, catogery, difficulty, noOfQes) {
-      this.allData = alldata;
-      this.catogery = catogery;
-      this.difficulty = difficulty;
-      this.currentQuestionNo = 0;
+      this.allData = alldata
+      this.catogery = catogery
+      this.difficulty = difficulty
+      this.currentQuestionNo = 0
       this.currentOptions
-      this.ready = true;
-      this.score = 0;
+      this.ready = true
+      this.score = 0
       this.totalquestion = noOfQes
       this.UpdateCurrentOptions()
     },
