@@ -9,8 +9,8 @@ const { data, refresh } = await useAsyncData(
   `${route.query.category}+${route.query.difficulty}`,
   () => $fetch(`https://opentdb.com/api.php?${`amount=`+route.query.amount}&${'type=multiple'}${route.query.category == 'any' ? '' : `&category=${route.query.category}`}${route.query.difficulty === 'any' ? '' : `&difficulty=${route.query.difficulty}`}`)
 )
-const { data: catData } = await useAsyncData(
-  `catData`,
+const { data: categoryData } = await useAsyncData(
+  `categoryData`,
   () => $fetch(`https://opentdb.com/api_category.php`)
 )
 store.onQuizStart(data.value.results, route.query.category, route.query.difficulty, route.query.amount)
@@ -19,7 +19,7 @@ const toHome = () => {
 }
 const onAnswerSubmit = (event, item) => {
     console.log(store.allData)
-    if (store.disablebtn) return
+    if (store.disableOptions) return
     store.onAnswerSubmit(item)
     event.target.classList.add('selectedAns')
     if (item === store.currentAnswer) {
@@ -30,9 +30,9 @@ const onAnswerSubmit = (event, item) => {
         resultDom.value.innerText = "Wrong Answer"
         resultDom.value.style.cssText = 'color:red;visibility:visible;'
     }
-    const aarDom = document.querySelectorAll('.option')
+    const optionsDom = document.querySelectorAll('.option')
     let rightAnswerDom = null
-    for (const option of aarDom.entries()) {
+    for (const option of optionsDom.entries()) {
         if (option[1].innerText === store.currentAnswer) {
             console.log("right ans", option[1].innerText)
             option[1].classList.add('rightAnswer')
@@ -41,7 +41,7 @@ const onAnswerSubmit = (event, item) => {
     }
 
     setTimeout(() => {
-        if (store.currentQuestionNo >= store.totalquestion) return
+        if (store.currentQuestionNo >= store.currentTotalQuestions) return
         else {
             event.target.classList.remove('selectedAns')
             rightAnswerDom.classList.remove('rightAnswer')
@@ -61,11 +61,10 @@ onMounted(() => {
     console.log(data.value.results)
 })
 
-const catName = computed(() => {
-    for (const cat of catData.value.trivia_categories) {
-        if (cat.id == store.catogery) {
-            console.log(cat.name)
-            return cat.name
+const computeCategoryName = computed(() => {
+    for (const category of categoryData.value.trivia_categories) {
+        if (category.id == store.currentCategory) {
+            return category.name
         }
     }
 })
@@ -79,20 +78,20 @@ const catName = computed(() => {
         <main>
             <div class="topoptions flex justify-between">
                 <div>
-                    Selected category: <strong class="capitalize">{{store.catogery === "any"? 'Mixed':
-                    catName}}</strong>
+                    Selected category: <strong class="capitalize">{{store.currentCategory === "any"? 'Mixed':
+                    computeCategoryName}}</strong>
                     <br>
-                    Difficulty: <strong class="capitalize">{{store.difficulty === "any"? 'Mixed':
-                    store.difficulty}}</strong>
+                    Difficulty: <strong class="capitalize">{{store.currentDifficulty === "any"? 'Mixed':
+                    store.currentDifficulty}}</strong>
                 </div>
                 <div class="font-medium flex items-center">Score: <span
                         class="font-bold text-lg score">{{store.score}}</span></div>
                 <div>
-                    <strong>{{store.totalquestion > store.currentQuestionNo ? store.currentQuestionNo + 1 :
-                    store.totalquestion}}/{{store.totalquestion}}</strong>
+                    <strong>{{store.currentTotalQuestions > store.currentQuestionNo ? store.currentQuestionNo + 1 :
+                    store.currentTotalQuestions}}/{{store.currentTotalQuestions}}</strong>
                 </div>
             </div>
-            <div v-if="store.currentQuestionNo >= store.totalquestion" class="scoreBorad">
+            <div v-if="store.currentQuestionNo >= store.currentTotalQuestions" class="scoreBorad">
                 <div class="scoreWrapper">
                     <div>Your Socre is: <span class="font-medium text-lg">{{store.score}}</span></div>
                     <div>On difficulty: <span class="font-medium text-lg">{{store.difficulty ? 'Mixed':
@@ -106,7 +105,7 @@ const catName = computed(() => {
                 </div>
                 <TransitionGroup name="options" tag="span">
                     <div
-                        :class="store.disablebtn ? 'disabled options grid grid-cols-2 justify-between font-medium' : 'options grid grid-cols-2 justify-between font-medium'">
+                        :class="store.disableOptions ? 'disabled options grid grid-cols-2 justify-between font-medium' : 'options grid grid-cols-2 justify-between font-medium'">
                         <span v-for="(item, index) in store.currentOptions" :key="index"
                             class="optionWrapper flex justify-center">
                             <span v-html="item" @click="(event) => onAnswerSubmit(event, item)" class="option drop-shadow-xl"></span>

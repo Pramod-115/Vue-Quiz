@@ -4,14 +4,14 @@ export const useQuizStore = defineStore("counter", {
   state: () => ({
     ready: false,
     allData: null,
-    catogery: "Mixed",
-    difficulty: null,
-    totalquestion: 0,
+    currentCategory: "Mixed",
+    currentDifficulty: null,
+    currentTotalQuestions: 0,
     currentQuestionNo: null,
     currentOptions: null,
     currentAnswer: null,
     score: 0,
-    disablebtn: false
+    disableOptions: false
   }),
 
   actions: {
@@ -27,26 +27,24 @@ export const useQuizStore = defineStore("counter", {
         .map(({ value }) => value)
       this.currentOptions = shuffled
     },
-    onQuizStart: function (alldata, catogery, difficulty, noOfQes) {
+    onQuizStart: function (alldata, catogery, difficulty, noOfQuestions) {
       this.allData = alldata
-      this.catogery = catogery
-      this.difficulty = difficulty
+      this.currentCategory = catogery
+      this.currentDifficulty = difficulty
       this.currentQuestionNo = 0
-      this.currentOptions
       this.ready = true
       this.score = 0
-      this.totalquestion = noOfQes
+      this.currentTotalQuestions = noOfQuestions
       this.UpdateCurrentOptions()
     },
     onAnswerSubmit: function (ans) {
       if (ans === this.allData[this.currentQuestionNo].correct_answer) {
         this.score ++
       }
-      this.disablebtn = true
+      this.disableOptions = true
       setTimeout(() => {
-        console.log(this.currentQuestionNo, this.totalquestion)
-        this.disablebtn = false
-        if (this.currentQuestionNo >= this.totalquestion) return
+        this.disableOptions = false
+        if (this.currentQuestionNo >= this.currentTotalQuestions) return
         else {
           this.currentQuestionNo ++
           this.UpdateCurrentOptions()
